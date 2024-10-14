@@ -1,0 +1,1 @@
+My entry to our Tic Tac Toe project for the Avion School course. This project aims to use what we've learned in the Javascript and DOM section of our course.
