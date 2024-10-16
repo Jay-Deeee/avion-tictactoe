@@ -55,12 +55,10 @@ createBoard();
 const statusDiv = document.querySelector(".status");
 const gameBox = document.querySelectorAll(".gameBox");
 let gameIsLive = true;
-let winner = null;
 
 const handleWin = (letter) => {
-    gameIsLive = false;
-    winner = letter;    
-    statusDiv.textContent = `${winner} has won!`;
+    gameIsLive = false;   
+    statusDiv.textContent = `${letter} has won!`;
 }
 
 const checkGameStatus = () => {
@@ -74,42 +72,77 @@ const checkGameStatus = () => {
     const bottomMiddle = gameBox[7].classList[1];
     const bottomRight = gameBox[8].classList[1];
 
-    // vertical
+    // horizontal
     if (topLeft && topLeft === topMiddle && topLeft === topRight) {
         handleWin(topLeft);
+        gameBox[0].classList.add("won");
+        gameBox[1].classList.add("won");
+        gameBox[2].classList.add("won");
     } else if (middleLeft && middleLeft === middle && middleLeft === middleRight) {
         handleWin(middleLeft);
+        gameBox[3].classList.add("won");
+        gameBox[4].classList.add("won");
+        gameBox[5].classList.add("won");
     } else if (bottomLeft && bottomLeft === bottomMiddle && bottomLeft === bottomRight) {
         handleWin(bottomLeft);
-    // horizontal
+        gameBox[6].classList.add("won");
+        gameBox[7].classList.add("won");
+        gameBox[8].classList.add("won");
+    // vertical
     } else if (topLeft && topLeft === middleLeft && topLeft === bottomLeft) {
         handleWin(topLeft);
+        gameBox[0].classList.add("won");
+        gameBox[3].classList.add("won");
+        gameBox[6].classList.add("won");
     } else if (topMiddle && topMiddle === middle && topMiddle === bottomMiddle) {
         handleWin(topMiddle);
+        gameBox[1].classList.add("won");
+        gameBox[4].classList.add("won");
+        gameBox[7].classList.add("won");
     } else if (topRight && topRight === middleRight && topRight === bottomRight) {
         handleWin(topRight);
+        gameBox[2].classList.add("won");
+        gameBox[5].classList.add("won");
+        gameBox[8].classList.add("won");
     // diagonal
     } else if (topLeft && topLeft === middle && topLeft === bottomRight) {
         handleWin(topLeft);
+        gameBox[0].classList.add("won");
+        gameBox[4].classList.add("won");
+        gameBox[8].classList.add("won");
     } else if (topRight && topRight === middle && topRight === bottomLeft) {
         handleWin(topRight);
+        gameBox[2].classList.add("won");
+        gameBox[4].classList.add("won");
+        gameBox[6].classList.add("won");
     // tie
     } else if (topLeft && topMiddle && topRight && middleLeft && middle && middleRight && bottomLeft && bottomMiddle && bottomRight) {
         gameIsLive = false;
         statusDiv.textContent = "It's a tie!";
     }
-};
+
+    if(gameIsLive === false && document.getElementById("replay-container").classList[0] === "hidden") {
+        gameHistory();
+    }
+}
 
 function reset() {
-    let gridBox = document.querySelectorAll(".gameBox");
-    for (i = 0; i < gridBox.length; i++) {
-        console.log(gridBox[i]);
-        gridBox[i].classList.remove("X", "O");
-    }
     gameIsLive = true;
-    winner = null;
     playerTurn1 = true;
     statusDiv.textContent = "X is first";
+
+    for (let gameBoxes of gameBox) {
+        gameBoxes.classList.remove("X", "O", "won");
+    }
+
+    if(document.getElementById("replay-container").classList[0] !== "hidden") {
+        gameHistory();
+    }
 }
 
 document.querySelector(".reset").addEventListener('click', reset);
+
+function gameHistory() {
+    let replayContainer = document.getElementById("replay-container");
+    replayContainer.classList.toggle("hidden");
+}
