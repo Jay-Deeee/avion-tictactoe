@@ -1,67 +1,68 @@
 let board = document.getElementById("board");
+let prev = document.getElementById("prev");
+let next = document.getElementById("next");
+let statusDiv = document.querySelector(".status");
 
-let gameBoard = [
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', '']
-];
+let gameBoard = Array(9).fill(null);
 
-let playerTurn1 = true;
+let history = [];
+let currentMoveIndex = 0;
+let currentPlayer = 'X';
+let gameIsLive = true;
 
-function createBoard(){
+function createBoard() {
     for (let i = 0; i < 9; i++) {
-        let gameGrid = document.createElement("div");
-        gameGrid.classList.add("gameBox");
-        let gridId = `box${i}`;
-        gameGrid.setAttribute("id", gridId);
+        let gameGrid = document.createElement('div');
+        gameGrid.classList.add('gameBox');
+        gameGrid.id = `box${i}`;
         board.appendChild(gameGrid);
-        gameGrid.addEventListener("click", () => {
+        gameGrid.addEventListener('click', () => {
             checkGameStatus();
             if (gameIsLive === true) {
-                addMove(gridId, i);
+            addMove(i)
             }
         });
     }
 }
 
-function addMove(element, boxNumber){
-    let specificGrid = document.getElementById(element);
-    if(specificGrid.classList.contains("x") || specificGrid.classList.contains("o")) {
-        return;
-    }
-
-    if(playerTurn1) {
-        specificGrid.classList.add("X");
-        statusDiv.textContent = "O is next";
+function addMove(index) {
+    if (!gameBoard[index]) {
+        gameBoard[index] = currentPlayer;
+        history.push([...gameBoard]);
+        currentMoveIndex = history.length - 1;
+        updateBoard();
+        togglePlayer();
         checkGameStatus();
-        playerTurn1 = !playerTurn1;
-    } else {
-        specificGrid.classList.add("O");
-        statusDiv.textContent = "X is next";
-        checkGameStatus();
-        playerTurn1 = !playerTurn1;
-    }
-    updateBoard(specificGrid, boxNumber);
+        }
 }
 
-function updateBoard(element, boxNumber){
-    let row = Math.floor(boxNumber/3);
-    let column = boxNumber % 3;
-    gameBoard[row][column] = element.innerText;
+function updateBoard() {
+    gameBoard.forEach((value, index) => {
+        const box = document.getElementById(`box${index}`);
+        box.classList.remove('X', 'O');
+        if (value) {
+            box.classList.add(value);
+        }
+    });
+}
+
+function togglePlayer() {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    statusDiv.textContent = `${currentPlayer} is next`;
 }
 
 createBoard();
 
-const statusDiv = document.querySelector(".status");
-const gameBox = document.querySelectorAll(".gameBox");
-let gameIsLive = true;
-
 const handleWin = (letter) => {
-    gameIsLive = false;   
+    gameIsLive = false;
     statusDiv.textContent = `${letter} has won!`;
 }
 
+const gameBox = document.querySelectorAll(".gameBox");
+
 const checkGameStatus = () => {
+    if (!gameIsLive) return;
+
     const topLeft = gameBox[0].classList[1];
     const topMiddle = gameBox[1].classList[1];
     const topRight = gameBox[2].classList[1];
@@ -128,8 +129,12 @@ const checkGameStatus = () => {
 
 function reset() {
     gameIsLive = true;
-    playerTurn1 = true;
     statusDiv.textContent = "X is first";
+    gameBoard.fill(null);
+    history = [];
+    currentMoveIndex = 0;
+    currentPlayer = 'X';
+    updateBoard();
 
     for (let gameBoxes of gameBox) {
         gameBoxes.classList.remove("X", "O", "won");
@@ -140,9 +145,27 @@ function reset() {
     }
 }
 
-document.querySelector(".reset").addEventListener('click', reset);
-
 function gameHistory() {
     let replayContainer = document.getElementById("replay-container");
     replayContainer.classList.toggle("hidden");
 }
+
+function prevHistory() {
+    if (currentMoveIndex > 0) {
+        currentMoveIndex--;
+        gameBoard = [...history[currentMoveIndex]];
+        updateBoard();
+    }
+}
+
+function nextHistory() {
+    if (currentMoveIndex < history.length - 1) {
+        currentMoveIndex++;
+        gameBoard = [...history[currentMoveIndex]];
+        updateBoard();
+    }
+}
+
+document.querySelector(".reset").addEventListener('click', reset);
+prev.addEventListener("click", prevHistory);
+next.addEventListener("click", nextHistory);
