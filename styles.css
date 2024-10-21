@@ -178,6 +178,13 @@ body {
     font-weight: 700;
 }
 
+.replay-btn:disabled {
+    color: #c1cac950;
+    border: 1px solid #c1cac950;
+    font-weight: 400;
+    cursor: default;
+}
+
 .hidden {
     display: none !important;
 }

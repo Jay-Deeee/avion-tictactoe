@@ -156,6 +156,7 @@ function prevHistory() {
         gameBoard = [...history[currentMoveIndex]];
         updateBoard();
     }
+    disableButton()
 }
 
 function nextHistory() {
@@ -163,6 +164,21 @@ function nextHistory() {
         currentMoveIndex++;
         gameBoard = [...history[currentMoveIndex]];
         updateBoard();
+    }
+    disableButton()
+}
+
+function disableButton() {
+    if (currentMoveIndex < history.length - 1) {
+        next.disabled = false;
+    } else if (currentMoveIndex == history.length - 1) {
+        next.disabled = true;
+    }
+
+    if (currentMoveIndex > 0) {
+        prev.disabled = false;
+    } else if (currentMoveIndex == 0) {
+        prev.disabled = true;
     }
 }
 
